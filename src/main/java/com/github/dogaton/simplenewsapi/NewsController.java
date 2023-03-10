@@ -26,7 +26,10 @@ public class NewsController {
     @Value("${gnews.api.key}")
     private String gNewsApiKey;
 
-    @GetMapping
+    private static final String TOP_HEADLINES = "/top-headlines";
+    private static final String SEARCH = "/search";
+
+    @GetMapping("/articles")
     @ResponseBody
     public Flux<Article> getNewsArticles(@RequestParam(defaultValue = "10") int count) {
         return webClient.get()
@@ -34,8 +37,27 @@ public class NewsController {
                         .scheme(httpsScheme)
                         .host(host)
                         .path(apiVersion)
-                        .path("/top-headlines")
+                        .path(TOP_HEADLINES)
                         .queryParam("max", count)
+                        .queryParam("token", gNewsApiKey)
+                        .build()
+                        .toUri())
+                .retrieve()
+                .bodyToFlux(News.class)
+                .flatMapIterable(News::articles);
+    }
+
+    @GetMapping("/articles/search")
+    @ResponseBody
+    public Flux<Article> getNewsArticlesByTitleOrAuthor(@RequestParam String title) {
+        return webClient.get()
+                .uri(UriComponentsBuilder.newInstance()
+                        .scheme(httpsScheme)
+                        .host(host)
+                        .path(apiVersion)
+                        .path(SEARCH)
+                        .queryParam("q", title)
+                        .queryParam("in", "title")
                         .queryParam("token", gNewsApiKey)
                         .build()
                         .toUri())

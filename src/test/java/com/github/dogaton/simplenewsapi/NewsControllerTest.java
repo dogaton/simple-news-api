@@ -19,7 +19,7 @@ class NewsControllerTest {
     @Test
     void whenNewsCountIsCalledWithFive_ThenReturnFiveArticles() {
         int count = 5;
-        webTestClient.get().uri("/news?count={count}", count)
+        webTestClient.get().uri("/news/articles?count={count}", count)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -40,7 +40,7 @@ class NewsControllerTest {
     @Test
     void whenNewsCountIsCalledWithNoRequest_ThenReturnDefaultValueTenArticles() {
         int size = 10;
-        webTestClient.get().uri("/news")
+        webTestClient.get().uri("/news/articles")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
