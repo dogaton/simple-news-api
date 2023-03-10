@@ -37,4 +37,25 @@ class NewsControllerTest {
                 });
     }
 
+    @Test
+    void whenNewsCountIsCalledWithNoRequest_ThenReturnDefaultValueTenArticles() {
+        int size = 10;
+        webTestClient.get().uri("/news")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Article.class)
+                .hasSize(size)
+                .consumeWith(response -> {
+                    List<Article> articles = response.getResponseBody();
+                    assertNotNull(articles);
+                    assertEquals(size, articles.size());
+                    for (Article article : articles) {
+                        assertNotNull(article.title());
+                        assertNotNull(article.description());
+                        assertNotNull(article.url());
+                    }
+                });
+    }
+
 }

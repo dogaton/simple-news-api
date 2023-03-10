@@ -28,7 +28,7 @@ public class NewsController {
 
     @GetMapping
     @ResponseBody
-    public Flux<Article> getNewsArticles(@RequestParam int count) {
+    public Flux<Article> getNewsArticles(@RequestParam(defaultValue = "10") int count) {
         return webClient.get()
                 .uri(UriComponentsBuilder.newInstance()
                         .scheme(httpsScheme)
