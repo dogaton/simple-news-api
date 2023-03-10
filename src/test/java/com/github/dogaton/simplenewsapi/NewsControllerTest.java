@@ -78,8 +78,8 @@ class NewsControllerTest {
 
     @Test
     void whenTitleIsNotFound_ThenReturnHTTPStatusCodeNotFound() {
-        String title = "hjkggjhgjhgh";
-        webTestClient.get().uri("news/articles/search?title=" + title)
+        String keyword = "hjkggjhgjhgh";
+        webTestClient.get().uri("news/articles/search?keyword=" + keyword)
                 .exchange()
                 .expectStatus().isNotFound();
     }
