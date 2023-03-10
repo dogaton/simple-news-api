@@ -63,7 +63,7 @@ public class NewsController {
 
         if (title != null) {
             uriBuilder.queryParam("q", title);
-            uriBuilder.queryParam("in", title);
+            uriBuilder.queryParam("in", "title");
         }
 
         return webClient.get()
