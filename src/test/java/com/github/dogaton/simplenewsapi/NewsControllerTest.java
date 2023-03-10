@@ -61,7 +61,7 @@ class NewsControllerTest {
     @Test
     void whenTitleExampleIsSearchedFor_ThenReturnArticleWithExampleInTitle() {
         String title = "example";
-        webTestClient.get().uri("news/articles/search?title=" + title)
+        webTestClient.get().uri("news/articles/search?keyword=hello&title=" + title)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
