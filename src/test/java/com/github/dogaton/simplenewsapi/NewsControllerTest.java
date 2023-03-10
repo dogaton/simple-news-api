@@ -58,4 +58,30 @@ class NewsControllerTest {
                 });
     }
 
+    @Test
+    void whenTitleExampleIsSearchedFor_ThenReturnArticleWithExampleInTitle() {
+        String title = "example";
+        webTestClient.get().uri("news/articles/search?title=" + title)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(Article.class)
+                .consumeWith(response -> {
+                    List<Article> articles = response.getResponseBody();
+                    assertFalse(articles.isEmpty());
+                    articles.forEach(article -> {
+                        assertNotNull(article.title());
+                        assertNotNull(article.description());
+                    });
+                });
+    }
+
+    @Test
+    void whenTitleIsNotFound_ThenReturnHTTPStatusCodeNotFound() {
+        String title = "hjkggjhgjhgh";
+        webTestClient.get().uri("news/articles/search?title=" + title)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
 }

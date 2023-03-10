@@ -5,10 +5,12 @@ import com.github.dogaton.simplenewsapi.record.News;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/news")
@@ -49,7 +51,7 @@ public class NewsController {
 
     @GetMapping("/articles/search")
     @ResponseBody
-    public Flux<Article> getNewsArticlesByTitleOrAuthor(@RequestParam String title) {
+    public Mono<ResponseEntity<Flux<Article>>> getNewsArticlesByTitle(@RequestParam String title) {
         return webClient.get()
                 .uri(UriComponentsBuilder.newInstance()
                         .scheme(httpsScheme)
@@ -63,6 +65,14 @@ public class NewsController {
                         .toUri())
                 .retrieve()
                 .bodyToFlux(News.class)
-                .flatMapIterable(News::articles);
+                .flatMapIterable(News::articles)
+                .collectList()
+                .flatMap(articles -> {
+                    if (articles.isEmpty()) {
+                        return Mono.just(ResponseEntity.notFound().build());
+                    } else {
+                        return Mono.just(ResponseEntity.ok().body(Flux.fromIterable(articles)));
+                    }
+                });
     }
 }
