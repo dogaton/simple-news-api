@@ -30,6 +30,7 @@ public class NewsController {
 
     private static final String TOP_HEADLINES = "/top-headlines";
     private static final String SEARCH = "/search";
+    private static final String TOKEN = "token";
 
     @GetMapping("/articles")
     @ResponseBody
@@ -41,7 +42,7 @@ public class NewsController {
                         .path(apiVersion)
                         .path(TOP_HEADLINES)
                         .queryParam("max", count)
-                        .queryParam("token", gNewsApiKey)
+                        .queryParam(TOKEN, gNewsApiKey)
                         .build()
                         .toUri())
                 .retrieve()
@@ -51,16 +52,24 @@ public class NewsController {
 
     @GetMapping("/articles/search")
     @ResponseBody
-    public Mono<ResponseEntity<Flux<Article>>> getNewsArticlesByTitle(@RequestParam String title) {
+    public Mono<ResponseEntity<Flux<Article>>> getNewsArticlesByTitle(
+            @RequestParam String keyword,
+            @RequestParam(required = false) String title) {
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance()
+                .scheme(httpsScheme)
+                .host(host)
+                .path(apiVersion)
+                .path(SEARCH);
+
+        if (title != null) {
+            uriBuilder.queryParam("q", title);
+            uriBuilder.queryParam("in", title);
+        }
+
         return webClient.get()
-                .uri(UriComponentsBuilder.newInstance()
-                        .scheme(httpsScheme)
-                        .host(host)
-                        .path(apiVersion)
-                        .path(SEARCH)
-                        .queryParam("q", title)
-                        .queryParam("in", "title")
-                        .queryParam("token", gNewsApiKey)
+                .uri(uriBuilder
+                        .queryParam("q", keyword)
+                        .queryParam(TOKEN, gNewsApiKey)
                         .build()
                         .toUri())
                 .retrieve()
