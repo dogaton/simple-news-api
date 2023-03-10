@@ -4,3 +4,10 @@ gnews:
     host: 'gnews.io'
     api-version: '/api/v4'
     key: '20c766df9314ad78be921bca3ed7c3bf'
+
+spring:
+  cache:
+    type: 'Caffeine'
+    cache-names: ['count', 'search']
+    caffeine:
+      spec: 'expireAfterWrite=60s'

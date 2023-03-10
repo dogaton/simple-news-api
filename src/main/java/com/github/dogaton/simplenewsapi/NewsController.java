@@ -4,6 +4,7 @@ import com.github.dogaton.simplenewsapi.record.Article;
 import com.github.dogaton.simplenewsapi.record.News;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,7 @@ public class NewsController {
 
     @GetMapping("/articles")
     @ResponseBody
+    @Cacheable(value = "count")
     public Flux<Article> getNewsArticles(@RequestParam(defaultValue = "10") int count) {
         return webClient.get()
                 .uri(UriComponentsBuilder.newInstance()
@@ -52,6 +54,7 @@ public class NewsController {
 
     @GetMapping("/articles/search")
     @ResponseBody
+    @Cacheable(value = "search")
     public Mono<ResponseEntity<Flux<Article>>> getNewsArticlesByTitle(
             @RequestParam String keyword,
             @RequestParam(required = false) String title) {
